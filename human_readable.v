@@ -26,7 +26,7 @@ Tactic Notation "calrewrite_inner" constr(l) constr(term) tactic(tactic) :=
          assert (l = term) as Hre by (tactic ; (try reflexivity)) ;
          match goal with
          | [Hre : ?l1 = ?l1 |- _] => clear Hre
-         | [Hre : _ |- _]         => rewrite Hre at 1 ; clear Hre
+         | [Hre : _ |- _]         => (rewrite Hre at 1 || rewrite <- Hre at 1); clear Hre
          end).
 
 Tactic Notation "calrewrite_inner_tmp" ident(i) constr(l) constr(term) tactic(tactic) :=
@@ -36,16 +36,17 @@ Tactic Notation "calrewrite_inner_tmp" ident(i) constr(l) constr(term) tactic(ta
 
 Tactic Notation "calrewrite_l" constr(term) "by" tactic(tactic) :=
   match goal with
-  | [|- ?l = _]  => calrewrite_inner l term tactic
-  | [|- ?l <= _] => calrewrite_inner l term tactic
-  | [|- ?l >= _] => calrewrite_inner l term tactic
+  | [|- _ ?l _]  => calrewrite_inner l term tactic
   end.
 
 Tactic Notation "calrewrite_r" constr(term) "by" tactic(tactic) :=
   match goal with
-  | [|- _ = ?l] => calrewrite_inner l term tactic
-  | [|- _ <= ?l] => calrewrite_inner l term tactic
-  | [|- _ >= ?l] => calrewrite_inner l term tactic
+  | [|- _ _ ?l] => calrewrite_inner l term tactic
+  | [|- ?l = _] => calrewrite_inner l term tactic
+  | [|- ?l < _] => calrewrite_inner l term tactic
+  | [|- ?l > _] => calrewrite_inner l term tactic
+  | [|- ?l <= _] => calrewrite_inner l term tactic
+  | [|- ?l >= _] => calrewrite_inner l term tactic
   end.
 
 Tactic Notation "calrewrite_tmp" ident(i) constr(term) "by" tactic(tactic) :=
@@ -55,11 +56,6 @@ Tactic Notation "calrewrite_tmp" ident(i) constr(term) "by" tactic(tactic) :=
 
 Ltac equal_l term tactic :=
   match goal with
-  | [|- ?l = _]  => calrewrite_inner l term tactic
-  | [|- ?l <= _] => calrewrite_inner l term tactic
-  | [|- ?l >= _] => calrewrite_inner l term tactic
-  | [|- ?l < _] => calrewrite_inner l term tactic
-  | [|- ?l > _] => calrewrite_inner l term tactic
   | [|- _ ?l _]  => calrewrite_inner l term tactic
   end.
      
@@ -110,40 +106,6 @@ Tactic Notation (at level 2) "=" "Left"  :=
   | [Hst : (memo CFR) |- _] => trivial
   end.
 
-Tactic Notation (at level 2) "Temp" ident(i) "=" constr(e) "{" tactic(t) "}" :=
- (equal_tmp i e t) ; set_state (CFTMP "i").
-
-Tactic Notation (at level 2) "=" "Temp" ident(i) :=
-  match goal with
-  | [ _ : i = ?ir |- _ ] =>
-    match goal with
-    | [H : i = ?t |- i = ?t ] => rewrite H ; reflexivity
-    | [H : ?t = i |- i = ?t ] => rewrite <- H ; reflexivity
-    | [H : i = ?t |- ?t = i ] => rewrite H ; reflexivity
-    | [H : ?t = i |- ?t = i ] => rewrite <- H ; reflexivity
-    | _ => match goal with
-           | [Hst : (memo ?ns) |- ?l = ?r] =>
-             match ns with
-             | CFL => remember l as i
-             | CFR => let tmp := fresh "tmp" in (
-                        remember r as i
-                      )
-             end
-           end
-    end
-  | _ =>
-    match goal with
-    | [Hst : (memo ?ns) |- ?l = ?r] =>
-      match ns with
-      | CFL => remember l as i
-      | CFR => let tmp := fresh "tmp" in (
-                 remember r as i
-               )
-      end
-    end
-  end.
-
-
 Tactic Notation (at level 2) "=" constr(x) "{" "by" uconstr(u) "}" :=
   match goal with
   | [Hst : (memo ?ns) |- _] =>
@@ -155,28 +117,6 @@ Tactic Notation (at level 2) "=" constr(x) "{" "by" uconstr(u) "}" :=
   end.
 
 Tactic Notation (at level 2) "=" constr(x) "{" "by" uconstr(u0) "," uconstr(u1) "}" :=
-  match goal with
-  | [Hst : (memo ?ns) |- _] =>
-    match ns with
-    | CFL        => calrewrite_l x by
-          ((try rewrite -> u0 , -> u1)
-           || (try rewrite <- u0 , -> u1)
-           || (try rewrite -> u0 , <- u1)
-           || (try rewrite <- u0 , <- u1))
-    | CFR        => calrewrite_r x by
-          ((try rewrite -> u0 , -> u1)
-           || (try rewrite <- u0 , -> u1)
-           || (try rewrite -> u0 , <- u1)
-           || (try rewrite <- u0 , <- u1))
-    | (CFTMP ?s) => calrewrite_tmp s x by
-          ((try rewrite -> u0 , -> u1)
-           || (try rewrite <- u0 , -> u1)
-           || (try rewrite -> u0 , <- u1)
-           || (try rewrite <- u0 , <- u1))
-    end
-  end.
-  
-  Tactic Notation (at level 2) "=" constr(x) "{" "by" uconstr(u0) "," uconstr(u1) "}" :=
   match goal with
   | [Hst : (memo ?ns) |- _] =>
     match ns with
@@ -233,3 +173,4 @@ Tactic Notation (at level 2)
       ; set_state CFL
     )
   end.
+
