@@ -1,0 +1,31 @@
+\begin{thebibliography}{1}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{Bird:1987}
+Bird, R.: An introduction to the theory of lists. In: Bory, M. (ed.) Logic of
+  Programming and Calculi of Discrete Design. pp. 5--42. Springer, Heidelberg
+  (1987)
+
+\bibitem{Bird:1988}
+Bird, R.: Lectures on constructive functional programming. In: Broy, M. (ed.)
+  Constructive Methods in Computer Science. pp. 151--218. Springer-Verlag
+  (1988), nATO ASI Series~F Volume~55. Also available as Technical Monograph
+  PRG-69, from the Programming Research Group, Oxford University
+
+\bibitem{Bird:1997}
+Bird, R., de~Moor, O.: Algebra of Programming. Prentice-Hall, Inc., Upper
+  Saddle River, NJ, USA (1997)
+
+\bibitem{Tesson:2010}
+Tesson, J., Hashimoto, H., Hu, Z., Loulergue, F., Takeichi, M.: {Program
+  Calculation in Coq}. In: Proceedings of the 13th International Conference on
+  Algebraic Methodology and Software Technology. pp. 163--179. AMAST'10,
+  Springer-Verlag, Berlin, Heidelberg (2011)
+
+\bibitem{Uustalu:99}
+Uustalu, T., Vene, V.: Primitive (co)recursion and course-of-value
+  (co)iteration, categorically. Informatica  \textbf{10},  5--26 (1999)
+
+\end{thebibliography}
